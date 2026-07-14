@@ -14,6 +14,13 @@ node_modules/
 .env
 logs/
 
+# Deploy output: installing a build (e.g. `npx moe install --dev`) writes the deployed skill +
+# agents into the target host's config. In this repo that is regenerable install output, not
+# source — the source lives in skill/, experts/, templates/, and dist/.
+.claude/
+.codex/
+.agents/
+
 # NOTE: dist/ and experts/*/knowledge/ and experts/*/materials/ are intentionally
 # committed — the compiled per-host builds and curated knowledge travel with the repo
 # (the impeccable.style model). Do not ignore them.

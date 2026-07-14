@@ -2,7 +2,7 @@
 
 _Consult this index, then grep/read the files below to answer nutrition questions. Always cite: source title · section · page._
 
-## Nutrition Essentials  →  `nutrition_essentials.md`
+## Nutrition Essentials  →  `nutrition-essentials.md`
 - Nutrition Essentials › Macronutrients
 - Nutrition Essentials › Dietary Fats and Cholesterol
 - Nutrition Essentials › Sodium and Blood Pressure

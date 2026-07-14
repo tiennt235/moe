@@ -6,6 +6,7 @@ picks an expert by reading them), so write them to say what each expert *knows*.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel, Field
@@ -13,6 +14,9 @@ from pydantic import BaseModel, Field
 from moe.models import slugify
 
 DEFAULT_TOOLS = ["Read", "Grep", "Glob"]
+# A builder expert *acts* (scaffolds experts, edits the roster, runs the build), so it needs
+# write/exec/web tools a read-only knowledge expert never gets.
+BUILDER_TOOLS = ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "WebSearch", "WebFetch"]
 
 
 class MaterialSpec(BaseModel):
@@ -32,6 +36,12 @@ class MaterialSpec(BaseModel):
 class ExpertSpec(BaseModel):
     name: str
     description: str
+    # "knowledge": answers from its corpus and cites it (default). "builder": a procedural
+    # meta-expert that creates other experts — rendered from a different behavior template.
+    kind: Literal["knowledge", "builder"] = "knowledge"
+    # dev_only experts run only in the repo + Python dev path, so they are excluded from the
+    # shipped end-user builds and the router roster (they ship only in the dist/dev build).
+    dev_only: bool = False
     materials: list[MaterialSpec] = Field(default_factory=list)
     tools: list[str] = Field(default_factory=lambda: list(DEFAULT_TOOLS))
     model: str | None = None            # optional Claude Code model hint

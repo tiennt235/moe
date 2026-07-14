@@ -1,6 +1,6 @@
 ---
 name: moe
-description: Route a domain question to the right expert(s) and answer with citations. Use for questions about: cardiology, nutrition.
+description: Route a domain question to the right expert(s) and answer with citations. Use for questions about: cardiology, nutrition, stoicism.
 ---
 
 # moe — mixture of domain experts
@@ -10,6 +10,7 @@ The team and what each expert knows:
 
 - **cardiology** (`moe-cardiology`) — Clinical cardiology — cardiac anatomy, the heart's chambers and valves, valvular disease (stenosis and regurgitation), and blood flow through the heart. Route here for heart / cardiovascular questions.
 - **nutrition** (`moe-nutrition`) — Human nutrition — macronutrients, dietary fats and cholesterol, sodium and blood pressure, and heart-healthy eating patterns (Mediterranean, DASH). Route here for diet, food, and nutrition questions.
+- **stoicism** (`moe-stoicism`) — Stoic philosophy from the primary sources — Marcus Aurelius's Meditations and Epictetus's Enchiridion: the dichotomy of control (what is up to us), living according to nature and reason, virtue as the sole good, and practical self-discipline. Route here for Stoicism, Stoic ethics, and questions about Marcus Aurelius or Epictetus.
 
 ## When to use
 Use this for substantive questions that one of the experts above covers. For anything outside

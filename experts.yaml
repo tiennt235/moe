@@ -25,3 +25,43 @@ experts:
       - path: experts/nutrition/materials/heart_healthy_diet.md
         title: Nutrition Essentials
     tools: [Read, Grep, Glob]
+
+  - name: stoicism
+    description: >-
+      Stoic philosophy from the primary sources — Marcus Aurelius's Meditations and Epictetus's
+      Enchiridion: the dichotomy of control (what is up to us), living according to nature and
+      reason, virtue as the sole good, and practical self-discipline. Route here for Stoicism,
+      Stoic ethics, and questions about Marcus Aurelius or Epictetus.
+    materials:
+      # EPUB (not .txt): the extractor sections EPUBs by chapter/book, so citations carry real
+      # anchors (e.g. "THE FOURTH BOOK"). Plain text would collapse to one section per file.
+      - url: https://www.gutenberg.org/cache/epub/2680/pg2680.epub
+        title: Meditations
+        author: Marcus Aurelius
+      - url: https://www.gutenberg.org/cache/epub/45109/pg45109.epub
+        title: The Enchiridion
+        author: Epictetus
+    tools: [Read, Grep, Glob]
+
+  # Meta-expert: builds *other* experts. Dev-only — it needs the repo + Python (it runs
+  # `uv run moe scaffold`/`build`), so it never ships to end users. Installed with `--dev`.
+  - name: expert-builder
+    kind: builder
+    dev_only: true
+    description: >-
+      Builds and maintains moe experts. Give it a topic plus materials (files/URLs) to ingest
+      exactly those, or a topic alone to auto-research authoritative, openly-licensed sources
+      (propose-then-confirm), then it scaffolds, ingests, builds, and verifies. Route here to
+      add or update an expert in this vault.
+    tools: [Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch]
+    materials:
+      - path: experts/expert-builder/materials/roster-schema.md
+        title: Roster schema (experts.yaml)
+      - path: experts/expert-builder/materials/formats.md
+        title: Supported material formats
+      - path: experts/expert-builder/materials/workflow.md
+        title: Build workflow
+      - path: experts/expert-builder/materials/sourcing.md
+        title: Sourcing rules
+      - path: experts/expert-builder/materials/quality.md
+        title: Quality checklist

@@ -1,9 +1,30 @@
-# /moe add-expert &lt;name&gt;
+# /moe add-expert <name>
 
-Scaffold a new expert: create `experts/&lt;name&gt;/` with a starter `EXPERT.md` and an empty
-`materials/` folder, and add a roster entry to `experts.yaml`. Then drop source material
-(PDF/EPUB/HTML/Markdown) into `materials/`, write a good one-line `description` (it drives
-routing), and run `/moe build`.
+Add a new expert to the vault. There are two ways in.
 
-Authoring/dev path (needs Python): `uv run moe scaffold &lt;name&gt;` (or `python -m moe scaffold
-&lt;name&gt;`), then `uv run moe build`.
+## In the dev repo — delegate to the expert-builder
+
+If you are working inside the moe repo (with the dev build installed via `npx
+github:tiennt235/moe install --dev`), delegate to the **`moe-expert-builder`** subagent. It
+handles the whole flow in one of two modes:
+
+- **Guided ingest** — you give it a topic *and* specific materials (file paths or URLs); it
+  ingests exactly those.
+- **Auto-research** — you give it only a topic; it searches for authoritative, openly-licensed
+  sources, proposes a shortlist for you to approve, then builds from the approved set.
+
+Either way it scaffolds the expert, patches `experts.yaml`, runs `uv run moe build`, verifies
+the knowledge + citations, and reports.
+
+## By hand (authoring/dev path, needs Python)
+
+Scaffold, drop in material, describe it, and build:
+
+```bash
+uv run moe scaffold <name> -d "<one-line routing description>"   # or python -m moe scaffold …
+#   add material into experts/<name>/materials/ (or url: entries in experts.yaml)
+uv run moe build
+```
+
+Write a good one-line `description` (it drives routing) and supported material formats are
+PDF/EPUB/MOBI/HTML/Markdown/text. Then deploy with `npx github:tiennt235/moe install`.

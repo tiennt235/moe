@@ -7,12 +7,12 @@ removed in the pivot to a skills-based distribution."""
 from __future__ import annotations
 
 import hashlib
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
 
-class SourceFormat(str, Enum):
+class SourceFormat(StrEnum):
     pdf = "pdf"
     epub = "epub"
     mobi = "mobi"
@@ -54,7 +54,9 @@ def make_source_id(origin: str, content_hash_hex: str) -> str:
 
 
 def slugify(name: str) -> str:
-    out = "".join(c if c.isalnum() else "_" for c in name.strip().lower())
-    while "__" in out:
-        out = out.replace("__", "_")
-    return out.strip("_")
+    # kebab-case: matches agent/skill/dir naming conventions (e.g. moe-expert-builder) and keeps
+    # multi-word expert names readable as directories and file names.
+    out = "".join(c if c.isalnum() else "-" for c in name.strip().lower())
+    while "--" in out:
+        out = out.replace("--", "-")
+    return out.strip("-")

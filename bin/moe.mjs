@@ -73,13 +73,19 @@ function planFor(provider, dir, scope) {
   const home = homedir();
   const distDir = join(REPO, "dist");
   const base = scope === "global" ? home : dir;
-  if (provider === "claude") {
+  if (provider === "claude" || provider === "dev") {
+    // The `dev` build is the Claude Code layout with *all* experts (builder/dev-only included);
+    // maintainers install it into the repo. Everything else matches the claude provider.
+    const distName = provider === "dev" ? "dev" : "claude-code";
     const moeRoot = scope === "global" ? join(home, ".claude", "skills", "moe") : ".claude/skills/moe";
     return {
-      dist: join(distDir, "claude-code"),
-      copies: [{ from: join(distDir, "claude-code", ".claude"), to: join(base, ".claude") }],
+      dist: join(distDir, distName),
+      copies: [{ from: join(distDir, distName, ".claude"), to: join(base, ".claude") }],
       subs: { "{{MOE_ROOT}}": moeRoot },
-      note: "skill → .claude/skills/moe · subagents → .claude/agents/moe-*",
+      note:
+        provider === "dev"
+          ? "dev build (all experts, incl. builder) → .claude/skills/moe + .claude/agents/moe-*"
+          : "skill → .claude/skills/moe · subagents → .claude/agents/moe-*",
     };
   }
   if (provider === "codex") {
@@ -112,7 +118,12 @@ function cmdInstall(opts) {
 
   // Zero-arg: auto-detect provider AND scope. Flags override.
   let targets;
-  if (opts.providers) {
+  if (opts.dev) {
+    // Maintainer path: install the dev build (all experts, incl. the expert-builder) into the
+    // repo. Defaults to project scope since it is meant for the repo you are working in.
+    targets = [{ provider: "dev", scope: forcedScope || "project" }];
+    console.log("Installing the dev build (all experts, including the expert-builder).");
+  } else if (opts.providers) {
     targets = String(opts.providers).split(",").map((s) => s.trim()).filter(Boolean)
       .map((provider) => ({ provider, scope: forcedScope || "project" }));
   } else {
@@ -167,6 +178,7 @@ function help() {
 
 User / agent facing  (Node, no Python — auto-detects your agent(s) with no flags):
   npx github:tiennt235/moe install [--providers=claude,codex,agents] [--scope=project|global] [--dir=.] [--force]
+  npx github:tiennt235/moe install --dev   maintainers: install the dev build (all experts, incl. expert-builder)
 
 Authoring / dev  (Python — extracts material, builds knowledge + dist/):
   uv run moe build                    rebuild knowledge + dist/
@@ -177,7 +189,8 @@ Authoring / dev  (Python — extracts material, builds knowledge + dist/):
 Install targets:
   claude  → .claude/skills/moe + .claude/agents/moe-*   (native subagents)
   codex   → .agents/skills/moe + .codex/agents + AGENTS.moe.md
-  agents  → .agents/skills/moe                          (Pi & generic Agent-Skills hosts)`);
+  agents  → .agents/skills/moe                          (Pi & generic Agent-Skills hosts)
+  dev     → .claude/* with all experts (incl. expert-builder); use --dev  (maintainers, in-repo)`);
 }
 
 // ---- dispatch ------------------------------------------------------------------------

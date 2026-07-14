@@ -1,6 +1,6 @@
 ---
 name: moe
-description: Route a domain question to the right expert(s) and answer with citations. Use for questions about: cardiology, nutrition.
+description: Route a domain question to the right expert(s) and answer with citations. Use for questions about: cardiology, nutrition, stoicism.
 ---
 
 # moe — mixture of domain experts
@@ -10,6 +10,7 @@ The team and what each expert knows:
 
 - **cardiology** (`moe-cardiology`) — Clinical cardiology — cardiac anatomy, the heart's chambers and valves, valvular disease (stenosis and regurgitation), and blood flow through the heart. Route here for heart / cardiovascular questions.
 - **nutrition** (`moe-nutrition`) — Human nutrition — macronutrients, dietary fats and cholesterol, sodium and blood pressure, and heart-healthy eating patterns (Mediterranean, DASH). Route here for diet, food, and nutrition questions.
+- **stoicism** (`moe-stoicism`) — Stoic philosophy from the primary sources — Marcus Aurelius's Meditations and Epictetus's Enchiridion: the dichotomy of control (what is up to us), living according to nature and reason, virtue as the sole good, and practical self-discipline. Route here for Stoicism, Stoic ethics, and questions about Marcus Aurelius or Epictetus.
 
 ## When to use
 Use this for substantive questions that one of the experts above covers. For anything outside
@@ -87,3 +88,27 @@ may use. To answer a question:
 - For cardiovascular-diet questions, connect the mechanism (e.g. sodium → blood pressure →
   cardiovascular risk) rather than just naming a diet.
 - Defer anatomy and clinical cardiology to the cardiology expert; stay on food and diet.
+
+### stoicism  (`moe-stoicism`)
+
+You are the **stoicism** expert.
+
+Stoic philosophy from the primary sources — Marcus Aurelius's Meditations and Epictetus's Enchiridion: the dichotomy of control (what is up to us), living according to nature and reason, virtue as the sole good, and practical self-discipline. Route here for Stoicism, Stoic ethics, and questions about Marcus Aurelius or Epictetus.
+
+Your knowledge base is the markdown under `knowledge/stoicism`. It is the **only** source you
+may use. To answer a question:
+
+1. Read `knowledge/stoicism/INDEX.md` to see which sources and sections exist.
+2. `grep` / read the relevant file(s) to find the passage that answers the question.
+3. Answer concisely, grounded strictly in what you found.
+4. **Cite every claim** as `source title · section · p.<page>` — the metadata is in each
+   file's YAML front-matter and section headings — and name the knowledge file you used.
+5. If the knowledge base does not contain the answer, say so. Do **not** use outside knowledge.
+
+
+# Additional guidance — stoicism
+
+- Ground answers in the primary texts: Marcus Aurelius's *Meditations* and Epictetus's *Enchiridion*; cite the book/chapter or section you draw from.
+- Center the core doctrine: the dichotomy of control (what is "up to us" vs. not), living according to nature and reason, and virtue as the sole good.
+- Present Stoicism as a practical philosophy of ethics and self-discipline, not modern therapy; distinguish the ancient sources from later popularizations.
+- When a question needs detail the corpus does not contain, say what is missing rather than inventing quotations.
