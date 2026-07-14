@@ -76,6 +76,20 @@ def _skill_description(experts: list[ExpertSpec]) -> str:
     )
 
 
+# Shown in the `/moe ` autocomplete hint (Claude Code reads `argument-hint`).
+SKILL_ARG_HINT = 'ask "<q>" | route "<q>" | list | add-expert | build'
+
+
+def _skill_frontmatter(experts: list[ExpertSpec]) -> str:
+    return _frontmatter(
+        [
+            ("name", "moe"),
+            ("description", _skill_description(experts)),
+            ("argument-hint", SKILL_ARG_HINT),
+        ]
+    )
+
+
 def _frontmatter(fields: list[tuple[str, str | None]]) -> str:
     lines = ["---"]
     for k, v in fields:
@@ -144,8 +158,7 @@ def _build_claude_layout(experts: list[ExpertSpec], root: Path, base: Path) -> N
     agents_dir.mkdir(parents=True, exist_ok=True)
 
     (skill_dir / "SKILL.md").write_text(
-        _frontmatter([("name", "moe"), ("description", _skill_description(experts))])
-        + router_skill(experts, CC_DELEGATION)
+        _skill_frontmatter(experts) + router_skill(experts, CC_DELEGATION)
     )
     _copy_commands(skill_dir)
 
@@ -185,8 +198,7 @@ def build_codex(roster: Roster, root: Path, dist: Path) -> None:
 
     experts = shipped_experts(roster)
     (skill_dir / "SKILL.md").write_text(
-        _frontmatter([("name", "moe"), ("description", _skill_description(experts))])
-        + router_skill(experts, CODEX_DELEGATION)
+        _skill_frontmatter(experts) + router_skill(experts, CODEX_DELEGATION)
     )
     _copy_commands(skill_dir)
 
@@ -227,7 +239,7 @@ def build_generic(roster: Roster, root: Path, dist: Path) -> None:
         inline.append(expert_body(e, kpath, root).strip())
 
     (skill_dir / "SKILL.md").write_text(
-        _frontmatter([("name", "moe"), ("description", _skill_description(experts))])
+        _skill_frontmatter(experts)
         + router_skill(experts, GENERIC_DELEGATION)
         + "\n"
         + "\n".join(inline)

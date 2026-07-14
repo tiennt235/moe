@@ -1,6 +1,7 @@
 ---
 name: moe
 description: Route a domain question to the right expert(s) and answer with citations. Use for questions about: cardiology, nutrition, stoicism.
+argument-hint: ask "<q>" | route "<q>" | list | add-expert | build
 ---
 
 # moe — mixture of domain experts
