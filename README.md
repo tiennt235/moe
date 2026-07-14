@@ -6,9 +6,6 @@ from your materials (books, articles, docs); it answers by **searching that fold
 and **citing** it — *no RAG, no vector DB, no embeddings*. A **router skill** picks the right
 expert(s) for a question and synthesizes a cited answer.
 
-Modeled on [impeccable.style](https://impeccable.style): author once, compile per-host builds
-into `dist/`, and deploy with a lightweight installer.
-
 ## Two paths
 
 `moe` deliberately splits along the two audiences:
@@ -70,6 +67,34 @@ uv run moe build && npx github:tiennt235/moe install
 
 Add materials as `path:` (local) or `url:` entries under an expert in `experts.yaml`. Supported
 formats: PDF (+OCR), EPUB, MOBI (via Calibre), HTML, Markdown/text.
+
+## Grow the team with the expert-builder (dev)
+
+`moe` ships a **meta-expert** that builds other experts for you, so you rarely edit
+`experts.yaml` by hand.
+It is **dev-only**: it runs the Python authoring path (`uv run moe …`), so it never ships to
+end users and lives only in the `dev` build.
+
+Onboard it once, from a clone of this repo:
+
+```bash
+uv run moe build                             # builds knowledge + dist/ (incl. the dev build)
+npx github:tiennt235/moe install --dev       # deploys the dev build into this repo's .claude/
+```
+
+Then, inside your coding agent, delegate to the `moe-expert-builder` subagent (or just ask, and
+the router routes to it). It works in two modes:
+
+- **Guided ingest** — give it a topic *and* materials (file paths or URLs); it ingests exactly
+  those.
+  Example: *"build a neurology expert from these two PDFs and this article."*
+- **Auto-research** — give it only a topic; it searches for authoritative, openly-licensed
+  sources, proposes a shortlist for you to approve, then builds from the approved set.
+  Example: *"build a stoicism expert from public-domain sources."*
+
+Either way it scaffolds the expert, patches `experts.yaml`, runs `uv run moe build`, verifies
+the knowledge and its citations, and reports.
+Deploy the result to end users with `npx github:tiennt235/moe install`.
 
 ## Portability
 
