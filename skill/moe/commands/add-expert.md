@@ -5,4 +5,5 @@ Scaffold a new expert: create `experts/&lt;name&gt;/` with a starter `EXPERT.md`
 (PDF/EPUB/HTML/Markdown) into `materials/`, write a good one-line `description` (it drives
 routing), and run `/moe build`.
 
-Equivalent CLI: `npx moe scaffold &lt;name&gt;`.
+Authoring/dev path (needs Python): `uv run moe scaffold &lt;name&gt;` (or `python -m moe scaffold
+&lt;name&gt;`), then `uv run moe build`.

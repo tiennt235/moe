@@ -9,17 +9,30 @@ expert(s) for a question and synthesizes a cited answer.
 Modeled on [impeccable.style](https://impeccable.style): author once, compile per-host builds
 into `dist/`, and deploy with a lightweight installer.
 
-## Quick start
+## Two paths
+
+`moe` deliberately splits along the two audiences:
+
+- **Authoring / dev (Python)** — build experts from source material. Needs Python (the
+  extractor).
+- **User / agent facing (`npx github:tiennt235/moe`)** — install the built experts into your
+  agent. Pure Node, no Python.
 
 ```bash
-npx moe build                 # extract materials → knowledge + INDEX, compile dist/  (needs Python)
-npx moe install               # detect your agent(s) and deploy the skill + experts
+# 1) authoring (dev): turn materials → knowledge + INDEX and compile per-host dist/
+uv run moe build            # or: pip install -e . && moe build   ·   python -m moe build
+
+# 2) use it (any user/agent): deploy the committed dist/ into your agent — no flags needed,
+#    it auto-detects your agent(s) and scope
+npx github:tiennt235/moe install
+
 # then, inside your agent:
 /moe ask "which valve is on the left side of the heart?"
 ```
 
-`build` needs Python (the extractor); `install` is pure Node and just deploys the committed
-`dist/`. Install prefers [uv](https://astral.sh/uv) for `build`; otherwise `pip install -e .`.
+A user who just wants the experts never needs Python — `dist/` is committed, so `npx
+github:tiennt235/moe install` (or `npx skills add tiennt235/moe`) is all they run. With no
+flags it detects your installed agent(s) (`~/.claude`, `~/.codex`, `.agents`/`.pi`) and scope.
 
 ## How it works
 
@@ -40,19 +53,19 @@ npx moe install               # detect your agent(s) and deploy the skill + expe
 | **Pi / generic** | `.agents/skills/moe` | inline expert-mode (no subagent primitive) |
 
 ```bash
-npx moe install --providers=claude,codex,agents --scope=project   # or --scope=global
+npx github:tiennt235/moe install --providers=claude,codex,agents --scope=project   # or --scope=global
 ```
 
 Claude Code can also install via plugin marketplace (`plugin/plugin.json`), and any
-Agent-Skills host via `npx skills add <repo>`.
+Agent-Skills host via `npx skills add tiennt235/moe`.
 
-## Manage the team
+## Manage the team (authoring / dev — Python)
 
 ```bash
-npx moe list                      # show the roster
-npx moe scaffold neurology -d "Clinical neurology…"   # new expert
+uv run moe list                              # show the roster
+uv run moe scaffold neurology -d "Clinical neurology…"   # new expert
 #   drop material into experts/neurology/materials/, then:
-npx moe build && npx moe install
+uv run moe build && npx github:tiennt235/moe install
 ```
 
 Add materials as `path:` (local) or `url:` entries under an expert in `experts.yaml`. Supported
@@ -61,8 +74,8 @@ formats: PDF (+OCR), EPUB, MOBI (via Calibre), HTML, Markdown/text.
 ## Portability
 
 The repo *is* the shareable expert team — `dist/` and `knowledge/` are committed. Anyone gets
-your experts with `npx moe install` (or `npx skills add <repo>`). No database, snapshot, or
-re-embedding.
+your experts with `npx github:tiennt235/moe install` (or `npx skills add tiennt235/moe`). No
+database, snapshot, or re-embedding.
 
 ## Layout
 

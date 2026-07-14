@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// moe — umbrella CLI. `install` is pure Node (deploys the committed dist/ into a host).
-// `build` / `scaffold` / `list` shell out to the Python author-time builder (moe.cli).
+// moe — the user/agent-facing installer. Pure Node, no Python: it deploys the committed
+// dist/ into a host (Claude Code / Codex / generic). Authoring (build/scaffold/list) is the
+// separate Python dev path — see `npx github:tiennt235/moe help`.
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { spawnSync } from "node:child_process";
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const TEXT_EXT = new Set([".md", ".toml", ".json", ".txt", ".yaml", ".yml"]);
@@ -42,15 +42,26 @@ function copyTree(src, dst, subs) {
 }
 
 // ---- host detection ------------------------------------------------------------------
-function detectProviders(dir) {
+// Detect which agents are present and where. Prefer a project-local harness folder over a
+// global one, so `npx github:tiennt235/moe install` with no flags does the right thing.
+function detectHosts(dir) {
   const home = homedir();
+  const defs = [
+    { provider: "claude", project: [join(dir, ".claude")], global: [join(home, ".claude")] },
+    { provider: "codex", project: [join(dir, ".codex")], global: [join(home, ".codex")] },
+    {
+      provider: "agents",
+      project: [join(dir, ".agents"), join(dir, ".pi")],
+      global: [join(home, ".agents"), join(home, ".pi")],
+    },
+  ];
   const found = [];
-  if (existsSync(join(home, ".claude")) || existsSync(join(dir, ".claude"))) found.push("claude");
-  if (existsSync(join(home, ".codex")) || existsSync(join(dir, ".codex"))) found.push("codex");
-  if (
-    existsSync(join(home, ".agents")) || existsSync(join(dir, ".agents")) ||
-    existsSync(join(home, ".pi")) || existsSync(join(dir, ".pi"))
-  ) found.push("agents");
+  for (const d of defs) {
+    const p = d.project.find(existsSync);
+    const g = d.global.find(existsSync);
+    if (p) found.push({ provider: d.provider, scope: "project", at: p });
+    else if (g) found.push({ provider: d.provider, scope: "global", at: g });
+  }
   return found;
 }
 
@@ -97,18 +108,28 @@ function planFor(provider, dir, scope) {
 // ---- commands ------------------------------------------------------------------------
 function cmdInstall(opts) {
   const dir = resolve(opts.dir || ".");
-  const scope = opts.scope === "global" ? "global" : "project";
-  let providers = opts.providers ? String(opts.providers).split(",").map((s) => s.trim()) : detectProviders(dir);
-  if (!providers.length) {
-    providers = ["claude"];
-    console.log("• no host detected — defaulting to Claude Code. Use --providers=claude,codex,agents to choose.");
+  const forcedScope = opts.scope === "global" || opts.scope === "project" ? opts.scope : null;
+
+  // Zero-arg: auto-detect provider AND scope. Flags override.
+  let targets;
+  if (opts.providers) {
+    targets = String(opts.providers).split(",").map((s) => s.trim()).filter(Boolean)
+      .map((provider) => ({ provider, scope: forcedScope || "project" }));
+  } else {
+    targets = detectHosts(dir).map((t) => ({ ...t, scope: forcedScope || t.scope }));
+    if (targets.length) {
+      console.log("Detected: " + targets.map((t) => `${t.provider} → ${t.scope}`).join(", "));
+    } else {
+      targets = [{ provider: "claude", scope: forcedScope || "project" }];
+      console.log("• no agent detected — defaulting to Claude Code (project). Override with --providers / --scope.");
+    }
   }
+
   if (!existsSync(join(REPO, "dist"))) {
-    console.error("✗ dist/ not found. Run `npx moe build` first.");
+    console.error("✗ dist/ not found. Build it first (dev path): `uv run moe build`.");
     process.exit(1);
   }
-  console.log(`Installing moe → providers: ${providers.join(", ")} · scope: ${scope}`);
-  for (const p of providers) {
+  for (const { provider: p, scope } of targets) {
     const plan = planFor(p, dir, scope);
     if (!existsSync(plan.dist)) {
       console.log(`  ⚠ ${p}: no build at ${plan.dist} (skipped)`);
@@ -128,54 +149,45 @@ function cmdInstall(opts) {
   console.log("Done. In your agent, try:  /moe ask \"…\"   (or /moe list)");
 }
 
-function pythonBuildArgs(sub, rest) {
-  // Prefer `uv run` (auto-syncs deps from pyproject); fall back to python3 with PYTHONPATH.
-  const uv = spawnSync("uv", ["--version"], { stdio: "ignore" });
-  if (uv.status === 0) {
-    return { cmd: "uv", args: ["run", "--project", REPO, "python", "-m", "moe", sub, ...rest] };
-  }
-  return {
-    cmd: "python3",
-    args: ["-m", "moe", sub, ...rest],
-    env: { ...process.env, PYTHONPATH: join(REPO, "src") },
-  };
-}
+function authoringHint(sub) {
+  const rest = sub === "scaffold" ? " <name> [-d \"…\"]" : "";
+  console.log(`'moe ${sub}' is part of the Python authoring/dev path (it extracts material, so it needs Python).
 
-function shellPython(sub, rest) {
-  const { cmd, args, env } = pythonBuildArgs(sub, rest);
-  const r = spawnSync(cmd, args, { stdio: "inherit", cwd: REPO, env: env || process.env });
-  if (r.error || r.status !== 0) {
-    console.error(
-      `✗ '${sub}' needs the Python builder. Install uv (https://astral.sh/uv) or run:\n` +
-      `    pip install -e .  &&  python -m moe ${sub}`
-    );
-    process.exit(r.status || 1);
-  }
+Run it one of these ways from the repo:
+  uv run moe ${sub}${rest}            # recommended (auto-installs deps)
+  pip install -e . && moe ${sub}${rest}
+  python -m moe ${sub}${rest}
+
+npx is the user/agent-facing installer:
+  npx github:tiennt235/moe install [--providers=…] [--scope=project|global]`);
 }
 
 function help() {
   console.log(`moe — a team of domain experts as agent skills
 
-Usage:
-  npx moe install [--providers=claude,codex,agents] [--scope=project|global] [--dir=.] [--force]
-  npx moe build                      rebuild knowledge + dist (needs Python)
-  npx moe scaffold <name> [-d ...]   add a new expert
-  npx moe list                       show the roster
+User / agent facing  (Node, no Python — auto-detects your agent(s) with no flags):
+  npx github:tiennt235/moe install [--providers=claude,codex,agents] [--scope=project|global] [--dir=.] [--force]
 
-Hosts:
+Authoring / dev  (Python — extracts material, builds knowledge + dist/):
+  uv run moe build                    rebuild knowledge + dist/
+  uv run moe scaffold <name> [-d …]   add a new expert
+  uv run moe list                     show the roster
+  (or:  pip install -e . && moe <cmd>   ·   python -m moe <cmd>)
+
+Install targets:
   claude  → .claude/skills/moe + .claude/agents/moe-*   (native subagents)
   codex   → .agents/skills/moe + .codex/agents + AGENTS.moe.md
   agents  → .agents/skills/moe                          (Pi & generic Agent-Skills hosts)`);
 }
 
 // ---- dispatch ------------------------------------------------------------------------
-const [, , sub, ...rest] = process.argv;
-const { opts, positional } = parseArgs(rest);
+const [, , sub] = process.argv;
+const { opts } = parseArgs(process.argv.slice(3));
 switch (sub) {
   case "install": cmdInstall(opts); break;
-  case "build": shellPython("build", rest); break;
-  case "scaffold": shellPython("scaffold", positional.concat(rest.filter((a) => a.startsWith("-")))); break;
-  case "list": shellPython("list", rest); break;
+  case "build":
+  case "scaffold":
+  case "list": authoringHint(sub); break;
   case undefined:
   case "help":
   case "--help":

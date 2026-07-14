@@ -29,9 +29,10 @@ dev = [
 ]
 
 [project.scripts]
-# The Python entry point for the author-time build. The user-facing umbrella CLI is the
-# Node `npx moe` (see package.json); its `build`/`scaffold` subcommands shell out to this.
-moe-build = "moe.cli:main"
+# Authoring / dev path (Python): build, scaffold, list. Run via `uv run moe <cmd>`,
+# `python -m moe <cmd>`, or after `pip install -e .` as `moe <cmd>`. The user/agent-facing
+# installer is the Node `npx moe install` (see package.json) and needs no Python.
+moe = "moe.cli:main"
 
 [build-system]
 requires = ["hatchling"]

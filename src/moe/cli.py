@@ -1,6 +1,7 @@
-"""``moe-build`` — the author-time Python CLI (extraction + compile). The user-facing umbrella
-is the Node ``npx moe`` (see package.json); its ``build`` / ``scaffold`` subcommands shell out
-to this. Everything here runs at author time; installation needs no Python."""
+"""``moe`` — the author-time Python CLI (extraction + compile): build, scaffold, list. Run via
+``uv run moe <cmd>``, ``python -m moe <cmd>``, or ``pip install -e . && moe <cmd>``. The
+user/agent-facing installer is the Node ``npx github:tiennt235/moe install`` (see package.json)
+and needs no Python. Everything here runs at author time."""
 
 from __future__ import annotations
 
@@ -39,7 +40,9 @@ def build(root: str = typer.Option(".", "--root", help="Repo root (holds experts
 
     builds = render.build_all(roster, rootp)
     console.print(f"[green]✓[/] compiled dist/: {', '.join(builds)} (+ plugin/plugin.json)")
-    console.print("Next: [bold]npx moe install[/] (or `npx skills add <repo>`)")
+    console.print(
+        "Next: [bold]npx github:tiennt235/moe install[/] (or `npx skills add tiennt235/moe`)"
+    )
 
 
 @app.command()
@@ -74,7 +77,7 @@ def scaffold(
         roster_path.write_text(yaml.safe_dump(data, sort_keys=False))
     console.print(
         f"[green]✓[/] scaffolded [bold]{slug}[/] → add material to "
-        f"experts/{slug}/materials/, edit its description, then `npx moe build`."
+        f"experts/{slug}/materials/, edit its description, then `uv run moe build`."
     )
 
 
