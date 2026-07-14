@@ -6,30 +6,18 @@ from your materials (books, articles, docs); it answers by **searching that fold
 and **citing** it — *no RAG, no vector DB, no embeddings*. A **router skill** picks the right
 expert(s) for a question and synthesizes a cited answer.
 
-## Two paths
+## Install
 
-`moe` deliberately splits along the two audiences:
-
-- **Authoring / dev (Python)** — build experts from source material. Needs Python (the
-  extractor).
-- **User / agent facing (`npx github:tiennt235/moe`)** — install the built experts into your
-  agent. Pure Node, no Python.
+`dist/` is committed, so you never need Python to use the experts. Install with `npx` — with no
+flags it auto-detects your installed agent(s) (`~/.claude`, `~/.codex`, `.agents`/`.pi`) and
+scope:
 
 ```bash
-# 1) authoring (dev): turn materials → knowledge + INDEX and compile per-host dist/
-uv run moe build            # or: pip install -e . && moe build   ·   python -m moe build
-
-# 2) use it (any user/agent): deploy the committed dist/ into your agent — no flags needed,
-#    it auto-detects your agent(s) and scope
-npx github:tiennt235/moe install
+npx github:tiennt235/moe install       # or: npx skills add tiennt235/moe
 
 # then, inside your agent:
 /moe ask "which valve is on the left side of the heart?"
 ```
-
-A user who just wants the experts never needs Python — `dist/` is committed, so `npx
-github:tiennt235/moe install` (or `npx skills add tiennt235/moe`) is all they run. With no
-flags it detects your installed agent(s) (`~/.claude`, `~/.codex`, `.agents`/`.pi`) and scope.
 
 ## How it works
 
@@ -56,7 +44,31 @@ npx github:tiennt235/moe install --providers=claude,codex,agents --scope=project
 Claude Code can also install via plugin marketplace (`plugin/plugin.json`), and any
 Agent-Skills host via `npx skills add tiennt235/moe`.
 
-## Manage the team (authoring / dev — Python)
+## Portability
+
+The repo *is* the shareable expert team — `dist/` and `knowledge/` are committed. Anyone gets
+your experts with `npx github:tiennt235/moe install` (or `npx skills add tiennt235/moe`). No
+database, snapshot, or re-embedding.
+
+## Layout
+
+```
+experts.yaml            roster (drives routing)
+experts/<name>/         EXPERT.md · materials/ · knowledge/ (built)
+skill/moe/              router skill source (SKILL.md + commands)
+templates/              shared expert-behavior template
+src/moe/                Python builder (extract → knowledge → dist)
+bin/moe.mjs             Node umbrella CLI (install/build/scaffold/list)
+dist/{claude-code,codex,agents,dev}/   committed per-host builds
+plugin/plugin.json      Claude Code marketplace manifest
+```
+
+## Contributing
+
+Building experts is the authoring path, which needs Python (the material extractor). Clone the
+repo, then add experts one of two ways.
+
+### Add an expert by hand
 
 ```bash
 uv run moe list                              # show the roster
@@ -66,14 +78,15 @@ uv run moe build && npx github:tiennt235/moe install
 ```
 
 Add materials as `path:` (local) or `url:` entries under an expert in `experts.yaml`. Supported
-formats: PDF (+OCR), EPUB, MOBI (via Calibre), HTML, Markdown/text.
+formats: PDF (+OCR), EPUB, MOBI (via Calibre), HTML, Markdown/text. (`uv run moe` also works as
+`python -m moe` or `pip install -e . && moe`.)
 
-## Grow the team with the expert-builder (dev)
+### Or let the expert-builder do it
 
 `moe` ships a **meta-expert** that builds other experts for you, so you rarely edit
 `experts.yaml` by hand.
-It is **dev-only**: it runs the Python authoring path (`uv run moe …`), so it never ships to
-end users and lives only in the `dev` build.
+It is **dev-only**: it runs the Python authoring path, so it never ships to end users and lives
+only in the `dev` build.
 
 Onboard it once, from a clone of this repo:
 
@@ -95,22 +108,3 @@ the router routes to it). It works in two modes:
 Either way it scaffolds the expert, patches `experts.yaml`, runs `uv run moe build`, verifies
 the knowledge and its citations, and reports.
 Deploy the result to end users with `npx github:tiennt235/moe install`.
-
-## Portability
-
-The repo *is* the shareable expert team — `dist/` and `knowledge/` are committed. Anyone gets
-your experts with `npx github:tiennt235/moe install` (or `npx skills add tiennt235/moe`). No
-database, snapshot, or re-embedding.
-
-## Layout
-
-```
-experts.yaml            roster (drives routing)
-experts/<name>/         EXPERT.md · materials/ · knowledge/ (built)
-skill/moe/              router skill source (SKILL.md + commands)
-templates/              shared expert-behavior template
-src/moe/                Python builder (extract → knowledge → dist)
-bin/moe.mjs             Node umbrella CLI (install/build/scaffold/list)
-dist/{claude-code,codex,agents}/   committed per-host builds
-plugin/plugin.json      Claude Code marketplace manifest
-```
