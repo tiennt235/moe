@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Node / Vite build (SPA is rebuilt into the package)
+web/node_modules/
+src/moe/web_dist/
+
+# Local state & secrets
+.env
+moe.db
+moe.db-*
+materials/
+*.tar.gz
+*.tar.zst
+logs/
+
+# Tooling
+.pytest_cache/
+.ruff_cache/

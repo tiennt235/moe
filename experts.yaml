@@ -1,0 +1,25 @@
+# Declarative expert-team definition — an optional, git-committable import/export of the
+# SQLite registry. `moe-ingest sync` reconciles this with Qdrant (skipping unchanged
+# sources by content hash). Descriptions drive query routing, so write them to describe
+# what each expert *knows*.
+experts:
+  - name: cardiology
+    description: >-
+      Clinical cardiology — cardiac anatomy, diagnosis, ECG interpretation, arrhythmias,
+      valvular disease, heart failure, and ESC/AHA treatment guidelines.
+    chunk:
+      target_tokens: 512
+      overlap: 0.15
+      contextual: true
+    sources:
+      - origin: ./materials/cardiology/braunwald.pdf
+        title: Braunwald's Heart Disease
+      - origin: https://www.ahajournals.org/example-guideline
+
+  - name: roman_history
+    description: >-
+      Ancient Roman history — the Republic and Empire, key figures, institutions,
+      military campaigns, and primary-source narratives.
+    sources:
+      - origin: ./materials/roman_history/gibbon.epub
+        title: The Decline and Fall of the Roman Empire

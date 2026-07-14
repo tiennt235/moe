@@ -1,0 +1,13 @@
+.venv/
+web/node_modules/
+**/__pycache__/
+*.egg-info/
+dist/
+build/
+.env
+moe.db*
+materials/
+logs/
+.pytest_cache/
+.ruff_cache/
+.git/
