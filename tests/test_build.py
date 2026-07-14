@@ -100,8 +100,9 @@ def test_dev_only_expert_excluded_from_shipped_builds(tmp_path):
     assert not (tmp_path / "dist/claude-code/.claude/agents/moe-expert-builder.md").exists()
     assert not (tmp_path / "dist/codex/.codex/agents/moe-expert-builder.toml").exists()
 
-    # Absent from the shipped router roster, present in the dev router roster.
+    # Absent from the shipped router roster, present in the dev router roster. (Check the roster
+    # bullet specifically — the shipped SKILL.md may still name the builder in guardrail prose.)
     shipped_skill = (tmp_path / "dist/claude-code/.claude/skills/moe/SKILL.md").read_text()
     dev_skill = (tmp_path / "dist/dev/.claude/skills/moe/SKILL.md").read_text()
-    assert "expert-builder" not in shipped_skill
-    assert "moe-expert-builder" in dev_skill
+    assert "- **expert-builder**" not in shipped_skill
+    assert "- **expert-builder**" in dev_skill
