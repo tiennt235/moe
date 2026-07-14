@@ -1,0 +1,12 @@
+{
+  "name": "moe",
+  "version": "0.2.0",
+  "description": "Route a domain question to the right expert(s) and answer with citations. Use for questions about: cardiology, nutrition.",
+  "author": "moe",
+  "skills": [
+    "./dist/claude-code/.claude/skills/moe"
+  ],
+  "agents": [
+    "./dist/claude-code/.claude/agents"
+  ]
+}

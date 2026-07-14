@@ -1,0 +1,32 @@
+{
+  "name": "moe",
+  "version": "0.2.0",
+  "description": "A distributable team of domain experts, shipped as agent skills (RAG-free). Install into Claude Code, Codex, Pi, and other agents.",
+  "type": "module",
+  "bin": {
+    "moe": "bin/moe.mjs"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "skill",
+    "templates",
+    "experts",
+    "src",
+    "pyproject.toml",
+    "experts.yaml",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "agent-skills",
+    "subagents",
+    "claude-code",
+    "codex",
+    "pi",
+    "mixture-of-experts"
+  ],
+  "license": "MIT"
+}

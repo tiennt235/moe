@@ -3,22 +3,17 @@ __pycache__/
 *.py[cod]
 .venv/
 *.egg-info/
-dist/
 build/
+.pytest_cache/
+.ruff_cache/
 
-# Node / Vite build (SPA is rebuilt into the package)
-web/node_modules/
-src/moe/web_dist/
+# Node
+node_modules/
 
 # Local state & secrets
 .env
-moe.db
-moe.db-*
-materials/
-*.tar.gz
-*.tar.zst
 logs/
 
-# Tooling
-.pytest_cache/
-.ruff_cache/
+# NOTE: dist/ and experts/*/knowledge/ and experts/*/materials/ are intentionally
+# committed — the compiled per-host builds and curated knowledge travel with the repo
+# (the impeccable.style model). Do not ignore them.

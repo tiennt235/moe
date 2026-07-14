@@ -1,25 +1,27 @@
-# Declarative expert-team definition — an optional, git-committable import/export of the
-# SQLite registry. `moe-ingest sync` reconciles this with Qdrant (skipping unchanged
-# sources by content hash). Descriptions drive query routing, so write them to describe
-# what each expert *knows*.
+# The moe expert-team roster — the source of truth the router reasons over.
+# Descriptions drive routing (the host model picks an expert by reading them), so write them
+# to say what each expert *knows*. Then `npx moe build` turns the materials into curated,
+# cited knowledge and compiles the per-host outputs under dist/.
+
+name: demo-team
 experts:
   - name: cardiology
     description: >-
-      Clinical cardiology — cardiac anatomy, diagnosis, ECG interpretation, arrhythmias,
-      valvular disease, heart failure, and ESC/AHA treatment guidelines.
-    chunk:
-      target_tokens: 512
-      overlap: 0.15
-      contextual: true
-    sources:
-      - origin: ./materials/cardiology/braunwald.pdf
-        title: Braunwald's Heart Disease
-      - origin: https://www.ahajournals.org/example-guideline
+      Clinical cardiology — cardiac anatomy, the heart's chambers and valves, valvular
+      disease (stenosis and regurgitation), and blood flow through the heart. Route here for
+      heart / cardiovascular questions.
+    materials:
+      - path: experts/cardiology/materials/valves.md
+        title: Cardiac Valves Primer
+    tools: [Read, Grep, Glob]
+    # model: sonnet        # optional Claude Code model hint
 
-  - name: roman_history
+  - name: nutrition
     description: >-
-      Ancient Roman history — the Republic and Empire, key figures, institutions,
-      military campaigns, and primary-source narratives.
-    sources:
-      - origin: ./materials/roman_history/gibbon.epub
-        title: The Decline and Fall of the Roman Empire
+      Human nutrition — macronutrients, dietary fats and cholesterol, sodium and blood
+      pressure, and heart-healthy eating patterns (Mediterranean, DASH). Route here for
+      diet, food, and nutrition questions.
+    materials:
+      - path: experts/nutrition/materials/heart_healthy_diet.md
+        title: Nutrition Essentials
+    tools: [Read, Grep, Glob]

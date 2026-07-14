@@ -1,6 +1,6 @@
 import pytest
 
-from moe.ingest.extract import detect_format, extract
+from moe.extract import detect_format, extract
 from moe.models import SourceFormat
 
 
