@@ -17,6 +17,10 @@ Run this before declaring a new or updated expert done.
       real section headings — not one giant untitled blob.
 - [ ] Page numbers are present for PDFs; section headings are present for HTML/EPUB/markdown.
 - [ ] No source extracted empty or errored during `uv run moe build`.
+- [ ] **The corpus explains, it does not merely list.** Open two or three sections: they should
+      contain prose that answers how/why, not just bullet lists of topic or product names. If the
+      expert only enumerates a syllabus, it will mis-serve users who ask how-to questions - go
+      ingest the explanatory sources the map points to (see the sourcing rules) before shipping.
 
 ## Licensing & sources
 

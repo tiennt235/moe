@@ -8,6 +8,7 @@ plus a per-expert ``INDEX.md``. No chunking, embeddings, or database — this is
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from urllib.request import Request, urlopen
 
@@ -60,6 +61,24 @@ def _heading_label(sec: Section) -> str:
     return " › ".join(sec.heading_path) if sec.heading_path else "(untitled section)"
 
 
+def _fmt_size(chars: int) -> str:
+    return f"{chars / 1000:.1f}k chars" if chars >= 1000 else f"{chars} chars"
+
+
+def _preview(text: str) -> str:
+    """First *substantive* line — a topical hint for the grep/read step. Skips short label stems
+    (e.g. "Knowledge of:", "Skills in:") that head list-structured docs and would otherwise make
+    every preview identical, and drops a leading bullet marker."""
+    for line in text.splitlines():
+        s = " ".join(line.split())
+        if not s or (s.endswith(":") and len(s) <= 24):
+            continue
+        s = re.sub(r"^[-*+]\s+", "", s).strip()
+        if any(c.isalnum() for c in s):  # skip lone bullets / punctuation-only lines
+            return s[:77] + "…" if len(s) > 78 else s
+    return ""
+
+
 def _yaml_escape(v: str) -> str:
     return '"' + v.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
@@ -104,7 +123,10 @@ def render_index_md(expert: ExpertSpec, entries: list[dict]) -> str:
     for e in entries:
         out.append(f"## {e['title']}  →  `{e['file']}`")
         for sec in e["sections"]:
-            out.append(f"- {sec}")
+            line = f"- {sec['label']}  ·  {_fmt_size(sec['chars'])}"
+            if sec["preview"]:
+                line += f'  ·  "{sec["preview"]}"'
+            out.append(line)
         out.append("")
     return "\n".join(out).rstrip() + "\n"
 
@@ -136,7 +158,14 @@ def build_expert_knowledge(expert: ExpertSpec, root: Path) -> dict:
             {
                 "title": doc.title or "Untitled",
                 "file": fname,
-                "sections": [f"{_heading_label(s)}{_page_suffix(s)}" for s in doc.sections],
+                "sections": [
+                    {
+                        "label": f"{_heading_label(s)}{_page_suffix(s)}",
+                        "chars": len(s.text),
+                        "preview": _preview(s.text),
+                    }
+                    for s in doc.sections
+                ],
             }
         )
         total_sections += len(doc.sections)

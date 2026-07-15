@@ -1,67 +1,68 @@
-# The moe expert-team roster — the source of truth the router reasons over.
-# Descriptions drive routing (the host model picks an expert by reading them), so write them
-# to say what each expert *knows*. Then `npx moe build` turns the materials into curated,
-# cited knowledge and compiles the per-host outputs under dist/.
-
 name: demo-team
 experts:
-  - name: cardiology
-    description: >-
-      Clinical cardiology — cardiac anatomy, the heart's chambers and valves, valvular
-      disease (stenosis and regurgitation), and blood flow through the heart. Route here for
-      heart / cardiovascular questions.
-    materials:
-      - path: experts/cardiology/materials/valves.md
-        title: Cardiac Valves Primer
-    tools: [Read, Grep, Glob]
-    # model: sonnet        # optional Claude Code model hint
-
-  - name: nutrition
-    description: >-
-      Human nutrition — macronutrients, dietary fats and cholesterol, sodium and blood
-      pressure, and heart-healthy eating patterns (Mediterranean, DASH). Route here for
-      diet, food, and nutrition questions.
-    materials:
-      - path: experts/nutrition/materials/heart_healthy_diet.md
-        title: Nutrition Essentials
-    tools: [Read, Grep, Glob]
-
-  - name: stoicism
-    description: >-
-      Stoic philosophy from the primary sources — Marcus Aurelius's Meditations and Epictetus's
-      Enchiridion: the dichotomy of control (what is up to us), living according to nature and
-      reason, virtue as the sole good, and practical self-discipline. Route here for Stoicism,
-      Stoic ethics, and questions about Marcus Aurelius or Epictetus.
-    materials:
-      # EPUB (not .txt): the extractor sections EPUBs by chapter/book, so citations carry real
-      # anchors (e.g. "THE FOURTH BOOK"). Plain text would collapse to one section per file.
-      - url: https://www.gutenberg.org/cache/epub/2680/pg2680.epub
-        title: Meditations
-        author: Marcus Aurelius
-      - url: https://www.gutenberg.org/cache/epub/45109/pg45109.epub
-        title: The Enchiridion
-        author: Epictetus
-    tools: [Read, Grep, Glob]
-
-  # Meta-expert: builds *other* experts. Dev-only — it needs the repo + Python (it runs
-  # `uv run moe scaffold`/`build`), so it never ships to end users. Installed with `--dev`.
-  - name: expert-builder
-    kind: builder
-    dev_only: true
-    description: >-
-      Builds and maintains moe experts. Give it a topic plus materials (files/URLs) to ingest
-      exactly those, or a topic alone to auto-research authoritative, openly-licensed sources
-      (propose-then-confirm), then it scaffolds, ingests, builds, and verifies. Route here to
-      add or update an expert in this vault.
-    tools: [Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch]
-    materials:
-      - path: experts/expert-builder/materials/roster-schema.md
-        title: Roster schema (experts.yaml)
-      - path: experts/expert-builder/materials/formats.md
-        title: Supported material formats
-      - path: experts/expert-builder/materials/workflow.md
-        title: Build workflow
-      - path: experts/expert-builder/materials/sourcing.md
-        title: Sourcing rules
-      - path: experts/expert-builder/materials/quality.md
-        title: Quality checklist
+- name: cardiology
+  description: "Clinical cardiology \u2014 cardiac anatomy, the heart's chambers and\
+    \ valves, valvular disease (stenosis and regurgitation), and blood flow through\
+    \ the heart. Route here for heart / cardiovascular questions."
+  materials:
+  - path: experts/cardiology/materials/valves.md
+    title: Cardiac Valves Primer
+  tools:
+  - Read
+  - Grep
+  - Glob
+- name: nutrition
+  description: "Human nutrition \u2014 macronutrients, dietary fats and cholesterol,\
+    \ sodium and blood pressure, and heart-healthy eating patterns (Mediterranean,\
+    \ DASH). Route here for diet, food, and nutrition questions."
+  materials:
+  - path: experts/nutrition/materials/heart_healthy_diet.md
+    title: Nutrition Essentials
+  tools:
+  - Read
+  - Grep
+  - Glob
+- name: stoicism
+  description: "Stoic philosophy from the primary sources \u2014 Marcus Aurelius's\
+    \ Meditations and Epictetus's Enchiridion: the dichotomy of control (what is up\
+    \ to us), living according to nature and reason, virtue as the sole good, and\
+    \ practical self-discipline. Route here for Stoicism, Stoic ethics, and questions\
+    \ about Marcus Aurelius or Epictetus."
+  materials:
+  - url: https://www.gutenberg.org/cache/epub/2680/pg2680.epub
+    title: Meditations
+    author: Marcus Aurelius
+  - url: https://www.gutenberg.org/cache/epub/45109/pg45109.epub
+    title: The Enchiridion
+    author: Epictetus
+  tools:
+  - Read
+  - Grep
+  - Glob
+- name: expert-builder
+  kind: builder
+  dev_only: true
+  description: Builds and maintains moe experts. Give it a topic plus materials (files/URLs)
+    to ingest exactly those, or a topic alone to auto-research authoritative, openly-licensed
+    sources (propose-then-confirm), then it scaffolds, ingests, builds, and verifies.
+    Route here to add or update an expert in this vault.
+  tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
+  - WebSearch
+  - WebFetch
+  materials:
+  - path: experts/expert-builder/materials/roster-schema.md
+    title: Roster schema (experts.yaml)
+  - path: experts/expert-builder/materials/formats.md
+    title: Supported material formats
+  - path: experts/expert-builder/materials/workflow.md
+    title: Build workflow
+  - path: experts/expert-builder/materials/sourcing.md
+    title: Sourcing rules
+  - path: experts/expert-builder/materials/quality.md
+    title: Quality checklist

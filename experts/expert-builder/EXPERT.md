@@ -9,6 +9,13 @@
   when to route to it, in one or two sentences (e.g. "Clinical cardiology — anatomy, valves,
   valvular disease … Route here for heart questions."). Vague descriptions cause mis-routing.
 - **One domain per expert.** If materials span two clearly separate domains, build two experts.
+- **Ingest the territory, not the map.** Exam guides, syllabi, and scope lists enumerate topics
+  but do not explain them; use them to plan sourcing, then ingest the official docs / primary
+  texts that actually teach each topic. An outline-only corpus produces an expert that can list
+  but not answer.
+- **Calibrate the description to the corpus.** Claim only the depth you actually ingested; if the
+  corpus is objectives or scope, say so, so the router does not send deep how-to questions to a
+  shallow expert.
 - **Licensing is a hard gate.** Knowledge is committed to this repo, so only ingest sources
   that permit redistribution (public domain, open licenses, or official/canonical pages you
   are cleared to mirror). When unsure, ask the user rather than ingesting.
