@@ -24,3 +24,6 @@ logs/
 # NOTE: dist/ and experts/*/knowledge/ and experts/*/materials/ are intentionally
 # committed — the compiled per-host builds and curated knowledge travel with the repo
 # (the impeccable.style model). Do not ignore them.
+
+# impeccable design-hook local cache (machine-generated, per-session)
+.impeccable/
